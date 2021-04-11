@@ -1,6 +1,5 @@
 #ifndef TOKENS_HPP_ 
 #define TOKENS_HPP_
-#include <cstdlib>
 
 enum tokentype { 
 	VOID = 1, 
@@ -35,11 +34,10 @@ enum tokentype {
 	COMMENT = 30,
 	ID = 31,
 	NUM = 32,
-	STRING = 33
-}; 
-extern int yylineno;
-extern char* yytext;
-extern size_t yyleng;
-extern int yylex(); 
+	STRING = 33,
+	WS = 34
+};
+
+
 
 #endif /* TOKENS_HPP_ */
