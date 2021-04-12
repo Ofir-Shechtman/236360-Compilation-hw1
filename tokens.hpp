@@ -38,6 +38,4 @@ enum tokentype {
 	WS = 34
 };
 
-
-
 #endif /* TOKENS_HPP_ */

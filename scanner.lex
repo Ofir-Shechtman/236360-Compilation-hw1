@@ -41,10 +41,12 @@ default {return DEFAULT;}
 = {return ASSIGN;}
 b {return B;}
 {binop} {return BINOP;}
-{DIGIT}+ {return NUM;}
+0|[1-9]{DIGIT}* {return NUM;}
 {ID} {return ID;}
 \n { yylineno++; return WS;}
 {WS} {return WS;}
+(\/\/)[^\n\r]* {return COMMENT;}
+\"[^\"\n\\\r]*\" {return STRING;}
 . { return -1; /* ERROR */ }
 %%
 int yywrap() {return 1;}

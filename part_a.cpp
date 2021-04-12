@@ -49,23 +49,28 @@ string stringifyToken(int token){
         case ID : return "ID";
         case NUM : return "NUM";
         case STRING : return "STRING";
-
     }
 }
 
-
-
 int main()
 {
-    yyin = fopen("../hw1-tests/ta1.in", "r");
+    yyin = fopen("../hw1-tests/ta2.in", "r");
     int token;
+    string text;
     while((token = yylex())) {
-        if(token != WS) {
-            cout << yyget_lineno() << " " << stringifyToken(token) << " "
-                 << yytext << endl;
+        text.assign(yytext, yyleng);
+        if(token == COMMENT){
+            text = "//";
         }
+        else if(token == STRING){
+            text = text.substr(1,yyleng-2);
+        }
+        else if(token == WS) {
+            continue;
+        }
+        cout << yyget_lineno() << " " << stringifyToken(token) << " "
+             << text << endl;
     }
     fclose(yyin);
 	return 0;
 }
-
