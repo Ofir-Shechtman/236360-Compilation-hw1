@@ -14,6 +14,7 @@ int yylex();
 int yyget_lineno();
 };
 
+
 string stringifyToken(int token){
     switch(token) {
         case VOID : return "VOID";
