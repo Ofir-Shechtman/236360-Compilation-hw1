@@ -69,24 +69,35 @@ void CutString(std::string& subject) {
         subject = subject.substr(0,pos);
     }
 }
+void UNDEFINED_ESCAPE_SEQ_HEX(string& text, int token){
+    int shift = token == UNDEFINED_ESCAPE_SEQ_HEX_2 ? 3 : 2;
+    text = text.substr(text.length()-shift,text.length());
+    cout << "Error undefined escape sequence " << text <<endl;
+    exit(0);
+}
 
 void ReplaceAscii(std::string& subject) {
     size_t pos = 0;
     while ((pos = subject.find("\\x", pos)) != std::string::npos) {
         string nums = subject.substr(pos+2,2);
         unsigned int x = std::stoul(nums, nullptr, 16);
-        string s(1, char(x));
-        subject.replace(pos, 4, s);
-
-
+        if(x>=40 && x<=176) {
+            string s(1, char(x));
+            subject.replace(pos, 4, s);
+        }
+        else{
+            subject = subject.substr(0,pos+4);
+            UNDEFINED_ESCAPE_SEQ_HEX(subject, UNDEFINED_ESCAPE_SEQ_HEX_2);
+        }
     }
 }
 
 
 
+
 int main()
 {
-    yyin = fopen("../part1Tests/tests/sean9.in", "r");
+    yyin = fopen("../part1Tests/tests/t4.in", "r");
     int token;
     while((token = yylex())) {
         string text(yytext);
@@ -114,10 +125,8 @@ int main()
             cout << "Error unclosed string" << endl;
             exit(0);
         }
-        else if(token==UNDEFINED_ESCAPE_SEQ_HEX){
-            text = text.substr(text.length()-3,text.length());
-            cout << "Error undefined escape sequence " << text <<endl;
-            exit(0);
+        else if(token==UNDEFINED_ESCAPE_SEQ_HEX_1 || token == UNDEFINED_ESCAPE_SEQ_HEX_2){
+            UNDEFINED_ESCAPE_SEQ_HEX(text, token);
         }
         else if(token==UNDEFINED_ESCAPE_SEQ){
             cout << "Error undefined escape sequence " << text[text.length()-1] <<endl;
