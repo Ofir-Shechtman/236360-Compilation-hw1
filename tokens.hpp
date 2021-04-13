@@ -35,7 +35,10 @@ enum tokentype {
 	ID = 31,
 	NUM = 32,
 	STRING = 33,
-	WS = 34
+	WS = 34,
+	ERROR= -1,
+    UNCLOSED_STRING=35,
+    UNDEFINED_ESCAPE_SEQ = 36
 };
 
 

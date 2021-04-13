@@ -2,9 +2,10 @@
 #include "tokens.hpp"
 %}
 SPACE [ ]
-TAB [\t]
-CR [\r]
-LF [\n]
+TAB \t
+CR \r
+DQ \"
+LF (\n)
 WS ({SPACE}|{TAB}|{CR}|{LF})
 LETTER [a-zA-Z]
 DIGIT [0-9]
@@ -44,9 +45,11 @@ b {return B;}
 0|[1-9]{DIGIT}* {return NUM;}
 {ID} {return ID;}
 \n { yylineno++; return WS;}
+(\/\/)[^(\n)(\r)]* {return COMMENT;}
+({DQ})([\x20-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))*({DQ}) {return STRING;}
+({DQ})([\x20-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))*\\. {return UNDEFINED_ESCAPE_SEQ;}
+({DQ})([\x20-\x21\x23-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))* {return UNCLOSED_STRING;}
 {WS} {return WS;}
-(\/\/)[^\n\r]* {return COMMENT;}
-\"[^\"\n\\\r]*\" {return STRING;}
 . { return -1; /* ERROR */ }
 %%
 int yywrap() {return 1;}

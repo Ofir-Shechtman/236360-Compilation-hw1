@@ -7,6 +7,7 @@ extern int yylineno;
 extern char* yytext;
 extern int yyleng;
 //extern int yylex();
+//extern int yyget_lineno();
 extern FILE *yyin;
 
 extern "C" {
@@ -53,21 +54,52 @@ string stringifyToken(int token){
     }
 }
 
+void ReplaceStringInPlace(std::string& subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+        subject.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
+}
+
+
+
 int main()
 {
-    yyin = fopen("../hw1-tests/ta2.in", "r");
+    yyin = fopen("../hw1-tests/ta3.in", "r");
     int token;
-    string text;
     while((token = yylex())) {
+        string text(yytext);
         text.assign(yytext, yyleng);
         if(token == COMMENT){
             text = "//";
         }
         else if(token == STRING){
             text = text.substr(1,yyleng-2);
+            ReplaceStringInPlace(text, "\\n", "\n");
+            ReplaceStringInPlace(text, "\\r", "\r");
+            ReplaceStringInPlace(text, "\\t", "\t");
+            ReplaceStringInPlace(text, "\\\\", "\\");
+            ReplaceStringInPlace(text, "\\\"", "\"");
+            ReplaceStringInPlace(text, "\\\\x", "\\x");
+
+
         }
         else if(token == WS) {
             continue;
+        }
+        else if(token==UNCLOSED_STRING) {
+            cout << "ERROR unclosed string" << endl;
+            exit(0);
+        }
+        else if(token==UNDEFINED_ESCAPE_SEQ){
+            cout << "Error undefined escape sequence " << text[text.length()-1] <<endl;
+            exit(0);
+        }
+        else if(token == ERROR){
+            cout << "ERROR " << text << endl;
+            exit(0);
         }
         cout << yyget_lineno() << " " << stringifyToken(token) << " "
              << text << endl;
