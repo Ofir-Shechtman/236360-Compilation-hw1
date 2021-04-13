@@ -63,11 +63,30 @@ void ReplaceStringInPlace(std::string& subject, const std::string& search,
     }
 }
 
+void CutString(std::string& subject) {
+    size_t pos = 0;
+    while ((pos = subject.find("\\0", pos)) != std::string::npos) {
+        subject = subject.substr(0,pos);
+    }
+}
+
+void ReplaceAscii(std::string& subject) {
+    size_t pos = 0;
+    while ((pos = subject.find("\\x", pos)) != std::string::npos) {
+        string nums = subject.substr(pos+2,2);
+        unsigned int x = std::stoul(nums, nullptr, 16);
+        string s(1, char(x));
+        subject.replace(pos, 4, s);
+
+
+    }
+}
+
 
 
 int main()
 {
-    yyin = fopen("../hw1-tests/ta3.in", "r");
+    yyin = fopen("../part1Tests/tests/sean9.in", "r");
     int token;
     while((token = yylex())) {
         string text(yytext);
@@ -82,7 +101,9 @@ int main()
             ReplaceStringInPlace(text, "\\t", "\t");
             ReplaceStringInPlace(text, "\\\\", "\\");
             ReplaceStringInPlace(text, "\\\"", "\"");
-            ReplaceStringInPlace(text, "\\\\x", "\\x");
+            ReplaceStringInPlace(text, "\\x", "\\x");
+            CutString(text);
+            ReplaceAscii(text);
 
 
         }
@@ -90,7 +111,12 @@ int main()
             continue;
         }
         else if(token==UNCLOSED_STRING) {
-            cout << "ERROR unclosed string" << endl;
+            cout << "Error unclosed string" << endl;
+            exit(0);
+        }
+        else if(token==UNDEFINED_ESCAPE_SEQ_HEX){
+            text = text.substr(text.length()-3,text.length());
+            cout << "Error undefined escape sequence " << text <<endl;
             exit(0);
         }
         else if(token==UNDEFINED_ESCAPE_SEQ){
@@ -98,7 +124,7 @@ int main()
             exit(0);
         }
         else if(token == ERROR){
-            cout << "ERROR " << text << endl;
+            cout << "Error " << text << endl;
             exit(0);
         }
         cout << yyget_lineno() << " " << stringifyToken(token) << " "

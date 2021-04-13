@@ -38,7 +38,8 @@ enum tokentype {
 	WS = 34,
 	ERROR= -1,
     UNCLOSED_STRING=35,
-    UNDEFINED_ESCAPE_SEQ = 36
+    UNDEFINED_ESCAPE_SEQ = 36,
+    UNDEFINED_ESCAPE_SEQ_HEX = 37
 };
 
 

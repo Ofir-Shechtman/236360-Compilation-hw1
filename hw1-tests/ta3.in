@@ -1,6 +1,1 @@
-// Hello world program
-
-int main() {
-	print("Hello \n world!");
-	return 0;
-}
+"Hello \x57orld!\r\nThis\tis\t\x63oo\x6C, as always."

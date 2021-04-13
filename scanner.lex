@@ -47,6 +47,7 @@ b {return B;}
 \n { yylineno++; return WS;}
 (\/\/)[^(\n)(\r)]* {return COMMENT;}
 ({DQ})([\x20-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))*({DQ}) {return STRING;}
+({DQ})([\x20-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))*\\x.[^\"] {return UNDEFINED_ESCAPE_SEQ_HEX;}
 ({DQ})([\x20-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))*\\. {return UNDEFINED_ESCAPE_SEQ;}
 ({DQ})([\x20-\x21\x23-\x5B\x5D-\x7E]|(\\\\)|(\\({DQ}))|(\\n)|(\\r)|(\\t)|(\\0)|(\\x([a-fA-F0-9]{2})))* {return UNCLOSED_STRING;}
 {WS} {return WS;}
