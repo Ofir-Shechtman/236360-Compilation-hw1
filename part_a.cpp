@@ -97,7 +97,8 @@ void ReplaceAscii(std::string& subject) {
 
 int main()
 {
-    yyin = fopen("../part1Tests/tests/t4.in", "r");
+    //yyin = fopen("../part1Tests/tests/t4.in", "r");
+    yyin = fopen("../part_a_tests/tests/hw1_test138.in", "r");
     int token;
     while((token = yylex())) {
         string text(yytext);
