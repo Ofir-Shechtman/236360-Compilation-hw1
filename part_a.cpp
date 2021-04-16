@@ -53,7 +53,6 @@ string stringifyToken(int token){
         case STRING : return "STRING";
     }
 }
-
 void ReplaceStringInPlace(std::string& subject, const std::string& search,
                           const std::string& replace) {
     size_t pos = 0;
@@ -69,8 +68,8 @@ void CutString(std::string& subject) {
         subject = subject.substr(0,pos);
     }
 }
-void UNDEFINED_ESCAPE_SEQ_HEX(string& text, int token){
-    int shift = token == UNDEFINED_ESCAPE_SEQ_HEX_2 ? 3 : 2;
+void UNDEFINED_ESCAPE_SEQ_HEX(string& text, int len){
+    int shift = len+1;
     text = text.substr(text.length()-shift,text.length());
     cout << "Error undefined escape sequence " << text <<endl;
     exit(0);
@@ -79,26 +78,40 @@ void UNDEFINED_ESCAPE_SEQ_HEX(string& text, int token){
 void ReplaceAscii(std::string& subject) {
     size_t pos = 0;
     while ((pos = subject.find("\\x", pos)) != std::string::npos) {
+        //cout <<subject <<" "<< subject.length() << endl;
         string nums = subject.substr(pos+2,2);
-        unsigned int x = std::stoul(nums, nullptr, 16);
-        if(x>=40 && x<=176) {
+        if(nums.length()==0){
+            cout << "Error undefined escape sequence " << subject[pos+1] <<endl;
+            exit(0);
+        }
+        else if(nums.length()==1){
+            subject = subject.substr(pos+1,2);
+            UNDEFINED_ESCAPE_SEQ_HEX(subject, 1);
+        }
+        unsigned int x;
+        try {
+            x = std::stoul(nums, nullptr, 16);
+        }
+        catch (...){
+            subject = subject.substr(pos+1,3);
+            UNDEFINED_ESCAPE_SEQ_HEX(subject, 2);
+        }
+        if(x>=0 && x<=127) {
             string s(1, char(x));
             subject.replace(pos, 4, s);
         }
         else{
-            subject = subject.substr(0,pos+4);
-            UNDEFINED_ESCAPE_SEQ_HEX(subject, UNDEFINED_ESCAPE_SEQ_HEX_2);
+            subject = subject.substr(0,pos+2+nums.length());
+            UNDEFINED_ESCAPE_SEQ_HEX(subject, nums.length());
         }
     }
 }
-
-
-
-
 int main()
 {
-    //yyin = fopen("../part1Tests/tests/t4.in", "r");
-    yyin = fopen("../part_a_tests/tests/hw1_test138.in", "r");
+    //yyin = fopen("../part1Tests/tests1/sean10.in", "r");
+    //yyin = fopen("../tests_a/.in", "r");
+    //yyin = fopen("../part_a_tests/tests/hw1_test313.in", "r");
+    yyin = fopen("../mytest", "r");
     int token;
     while((token = yylex())) {
         string text(yytext);
@@ -107,15 +120,27 @@ int main()
             text = "//";
         }
         else if(token == STRING){
+            //cout <<text << endl;
             text = text.substr(1,yyleng-2);
             ReplaceStringInPlace(text, "\\n", "\n");
             ReplaceStringInPlace(text, "\\r", "\r");
             ReplaceStringInPlace(text, "\\t", "\t");
-            ReplaceStringInPlace(text, "\\\\", "\\");
             ReplaceStringInPlace(text, "\\\"", "\"");
-            ReplaceStringInPlace(text, "\\x", "\\x");
-            CutString(text);
+            ReplaceStringInPlace(text, "\\\\", "\\");
+            size_t pos = 0;
+            while ((pos = text.find("\\", pos)) != std::string::npos){
+                if(text[pos+1]=='x' || text[pos+1]=='0' || text[pos+1]=='\\' || text[pos+1]=='\"' || text[pos+1]=='n' || text[pos+1]=='r' || text[pos+1]==' ' || text[pos+1]=='t' || pos==text.length()-1){
+                    pos++;
+                    continue;
+                }
+                else{
+                    cout << "Error undefined escape sequence " << text[pos+1] <<endl;
+                    exit(0);
+                }
+            }
+            ReplaceStringInPlace(text, "\\\\", "\\");
             ReplaceAscii(text);
+            CutString(text);
 
 
         }
@@ -141,5 +166,5 @@ int main()
              << text << endl;
     }
     fclose(yyin);
-	return 0;
+    return 0;
 }
