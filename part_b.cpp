@@ -6,10 +6,9 @@ using namespace std;
 //extern int yylex();
 extern char* yytext;
 extern FILE *yyin;
+extern int yylex();
 
-extern "C" {
-int yylex();
-};
+
 
 string stringifyToken(int token){
     switch(token) {
@@ -51,9 +50,6 @@ string stringifyToken(int token){
 
 int main()
 {
-    setbuf(stdout, 0);
-
-    yyin = fopen("../hw1-tests/tb1.in", "r");
     stack<int> bracket_history;
 	int token;
 	while((token = yylex())) {

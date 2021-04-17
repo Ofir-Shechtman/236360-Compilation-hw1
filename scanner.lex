@@ -47,7 +47,7 @@ b {return B;}
 \n { yylineno++; return WS;}
 (\/\/)[^\n\r\r\n]* {return COMMENT;}
 ({DQ})([^\"\\\n\r\0]|(\\.))*({DQ}) {return STRING;}
-({DQ})([^\"\\\n\r\0]|(\\.)) {return UNCLOSED_STRING;}
+({DQ})([^\"\\\n\r\0]|((\\.)?))*([^({DQ})\n\r\r\n]|(\\({DQ})))? {return UNCLOSED_STRING;}
 {WS} {return WS;}
 . { return -1; /* ERROR */ }
 %%

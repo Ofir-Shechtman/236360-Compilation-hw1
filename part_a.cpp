@@ -6,14 +6,10 @@ using namespace std;
 extern int yylineno;
 extern char* yytext;
 extern int yyleng;
-//extern int yylex();
-//extern int yyget_lineno();
+extern int yylex();
+extern int yyget_lineno();
 extern FILE *yyin;
 
-extern "C" {
-int yylex();
-int yyget_lineno();
-};
 
 
 string stringifyToken(int token){
@@ -53,6 +49,7 @@ string stringifyToken(int token){
         case STRING : return "STRING";
     }
 }
+
 void ReplaceStringInPlace(std::string& subject, const std::string& search,
                           const std::string& replace) {
     size_t pos = 0;
@@ -106,12 +103,12 @@ void ReplaceAscii(std::string& subject) {
         }
     }
 }
+
+
+
+
 int main()
 {
-    //yyin = fopen("../part1Tests/tests1/sean10.in", "r");
-    //yyin = fopen("../tests_a/.in", "r");
-    //yyin = fopen("../part_a_tests/tests/hw1_test313.in", "r");
-    yyin = fopen("../mytest", "r");
     int token;
     while((token = yylex())) {
         string text(yytext);
@@ -126,14 +123,15 @@ int main()
             ReplaceStringInPlace(text, "\\r", "\r");
             ReplaceStringInPlace(text, "\\t", "\t");
             ReplaceStringInPlace(text, "\\\"", "\"");
-            ReplaceStringInPlace(text, "\\\\", "\\");
             size_t pos = 0;
             while ((pos = text.find("\\", pos)) != std::string::npos){
-                if(text[pos+1]=='x' || text[pos+1]=='0' || text[pos+1]=='\\' || text[pos+1]=='\"' || text[pos+1]=='n' || text[pos+1]=='r' || text[pos+1]==' ' || text[pos+1]=='t' || pos==text.length()-1){
-                    pos++;
+                if(text[pos+1]=='x' || text[pos+1]=='0' || text[pos+1]=='\\' || text[pos+1]=='\"' || text[pos+1]=='n' || text[pos+1]=='r' || text[pos+1]=='t'){
+                    pos+=2;
                     continue;
                 }
                 else{
+                    string text2 = text;
+                    ReplaceAscii(text2);
                     cout << "Error undefined escape sequence " << text[pos+1] <<endl;
                     exit(0);
                 }
@@ -166,5 +164,5 @@ int main()
              << text << endl;
     }
     fclose(yyin);
-    return 0;
+	return 0;
 }
